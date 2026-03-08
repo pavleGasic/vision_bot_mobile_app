@@ -10,11 +10,15 @@ class AppTheme {
     brightness: Brightness.dark,
     //colors
     primaryColor: ColorPalette.primaryColor,
-    scaffoldBackgroundColor: ColorPalette.primaryColorDark,
+    scaffoldBackgroundColor: ColorPalette.backgroundColor,
     highlightColor: Colors.white,
     primaryColorDark: ColorPalette.primaryColorDark,
+    cardColor: ColorPalette.cardColor,
+    fontFamily: 'UbuntuMono',
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: ColorPalette.backgroundColor
+    ),
     //text theme
-    fontFamily: 'Rajdhani',
     textTheme: TextStyles.textTheme,
     //icons
     iconTheme: const IconThemeData(

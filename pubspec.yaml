@@ -13,33 +13,46 @@ dependencies:
   cupertino_icons: ^1.0.8
   dartz: ^0.10.1
   equatable: ^2.0.7
-  uuid: ^4.5.3
+  flutter_svg: ^2.2.3
   provider: ^6.1.5+1
+  uuid: ^4.5.3
+  model_viewer_plus: ^1.10.0
+  flutter_joystick: ^0.2.2
+  web_socket_channel: ^3.0.3
+  get_it: ^9.2.1
+  flutter_dotenv: ^6.0.0
+  flutter_riverpod: ^3.2.1
+  riverpod_annotation: ^4.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  build_runner: ^2.12.2
   flutter_lints: ^6.0.0
   very_good_analysis: ^10.2.0
+  riverpod_generator: ^4.0.3
 
 flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
+    - assets/images/svg/
+    - assets/glb/
+    - env/.ros.env
   fonts:
-    - family: Pixelzone
+    - family: PS2P
       fonts:
-        - asset: assets/fonts/Pixelzone.ttf
-    - family: SpaceMono
+        - asset: assets/fonts/PressStart2P-Regular.ttf
+    - family: UbuntuMono
       fonts:
-        - asset: assets/fonts/SpaceMono-Regular.ttf
+        - asset: assets/fonts/UbuntuMono-Regular.ttf
           weight: 400
-        - asset: assets/fonts/SpaceMono-Italic.ttf
+        - asset: assets/fonts/UbuntuMono-Italic.ttf
           weight: 400
           style: italic
-        - asset: assets/fonts/SpaceMono-Bold.ttf
+        - asset: assets/fonts/UbuntuMono-Bold.ttf
           weight: 700
-        - asset: assets/fonts/SpaceMono-BoldItalic.ttf
+        - asset: assets/fonts/UbuntuMono-BoldItalic.ttf
           weight: 700
           style: italic

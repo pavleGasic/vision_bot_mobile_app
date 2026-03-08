@@ -1,12 +1,30 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vision_bot_mobile_app/core/common/providers/tab_navigator.dart';
 import 'package:vision_bot_mobile_app/core/common/views/persistent_view.dart';
-import 'package:vision_bot_mobile_app/src/home/presentation/page/home_page.dart';
+import 'package:vision_bot_mobile_app/src/3dmodel/presentation/view/robot_model_view.dart';
+import 'package:vision_bot_mobile_app/src/control/presentation/view/control_view.dart';
 
 class HomeController extends ChangeNotifier {
   List<int> _indexHistory = [0];
   final List<Widget> _screens = [
+    ChangeNotifierProvider(
+      create: (_) => TabNavigator(
+        TabItem(
+          child: const RobotModelView(),
+        ),
+      ),
+      child: const PersistentView(),
+    ),
+    ChangeNotifierProvider(
+      create: (_) => TabNavigator(
+        TabItem(
+          child: const ControlView(),
+        ),
+      ),
+      child: const PersistentView(),
+    ),
     ChangeNotifierProvider(
       create: (_) => TabNavigator(
         TabItem(
@@ -28,9 +46,11 @@ class HomeController extends ChangeNotifier {
   List<Widget> get screens => _screens;
 
   int _currentIndex = 0;
+
   int get currentIndex => _currentIndex;
+
   void changeIndex(int index) {
-    if(_currentIndex == index) return;
+    if (_currentIndex == index) return;
     _currentIndex = index;
     _indexHistory.add(index);
     notifyListeners();

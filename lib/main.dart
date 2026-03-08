@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart';
+import 'package:vision_bot_mobile_app/core/di/service_locator.dart';
 import 'package:vision_bot_mobile_app/core/resources/theme/app_theme.dart';
 import 'package:vision_bot_mobile_app/core/services/routing/router.dart';
 import 'package:vision_bot_mobile_app/src/home/providers/home_controller.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MainApp());
+  await initializeDependencies();
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -15,9 +22,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => HomeController())
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => HomeController())],
       child: MaterialApp(
         title: 'VisionBot',
         debugShowCheckedModeBanner: false,
