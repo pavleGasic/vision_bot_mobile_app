@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:vision_bot_mobile_app/core/di/service_locator.dart';
 import 'package:vision_bot_mobile_app/core/resources/theme/app_theme.dart';
 import 'package:vision_bot_mobile_app/core/services/routing/router.dart';
-import 'package:vision_bot_mobile_app/src/home/providers/home_controller.dart';
+import 'package:vision_bot_mobile_app/core/services/websocket/web_socket_client.dart';
+import 'package:vision_bot_mobile_app/src/presentation/home/providers/home_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

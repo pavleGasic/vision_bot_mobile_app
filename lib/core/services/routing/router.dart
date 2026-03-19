@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vision_bot_mobile_app/src/home/presentation/page/home_page.dart';
+import 'package:vision_bot_mobile_app/src/presentation/home/page/home_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   try {

@@ -2,11 +2,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:vision_bot_mobile_app/core/environment.dart';
 import 'package:vision_bot_mobile_app/core/services/websocket/web_socket_client.dart';
-import 'package:vision_bot_mobile_app/src/home/data/repos/heartbeat_repo_impl.dart';
-import 'package:vision_bot_mobile_app/src/home/data/sources/heartbeat_remote_data_source.dart';
-import 'package:vision_bot_mobile_app/src/home/data/sources/heartbeat_remote_data_source_impl.dart';
-import 'package:vision_bot_mobile_app/src/home/domain/repos/heartbeat_repo.dart';
-import 'package:vision_bot_mobile_app/src/home/domain/usecases/heartbeat.dart';
+import 'package:vision_bot_mobile_app/src/data/repos/robot_repo_impl.dart';
+import 'package:vision_bot_mobile_app/src/data/sources/robot_remote_data_source.dart';
+import 'package:vision_bot_mobile_app/src/data/sources/robot_remote_data_source_impl.dart';
+import 'package:vision_bot_mobile_app/src/domain/repos/robot_repo.dart';
+import 'package:vision_bot_mobile_app/src/domain/usecases/publish_velocity.dart';
+import 'package:vision_bot_mobile_app/src/domain/usecases/heartbeat.dart';
+import 'package:vision_bot_mobile_app/src/domain/usecases/ros_connect.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -32,11 +34,13 @@ void initializeWebsocketClient() {
 
 void initializeRemoteDataSources() {
   serviceLocator
-    ..registerLazySingleton<HeartbeatRemoteDataSource>(
-      () => HeartbeatRemoteDataSourceImpl(wsClient: serviceLocator()),
+    ..registerLazySingleton<RobotRemoteDataSource>(
+      () => RobotRemoteDataSourceImpl(wsClient: serviceLocator()),
     )
-    ..registerLazySingleton<HeartbeatRepo>(
-      () => HeartbeatRepoImpl(serviceLocator()),
+    ..registerLazySingleton<RobotRepo>(
+      () => RobotRepoImpl(serviceLocator()),
     )
-    ..registerLazySingleton(() => Heartbeat(serviceLocator()));
+    ..registerLazySingleton(() => PublishVelocity(serviceLocator()))
+    ..registerLazySingleton(() => Heartbeat(serviceLocator()))
+    ..registerLazySingleton(() => RosConnect(serviceLocator()));
 }

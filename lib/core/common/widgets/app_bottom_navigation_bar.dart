@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vision_bot_mobile_app/core/resources/colors/color_palette.dart';
 import 'package:vision_bot_mobile_app/core/resources/consts/image_consts.dart';
-import 'package:vision_bot_mobile_app/src/home/providers/home_controller.dart';
+import 'package:vision_bot_mobile_app/src/presentation/home/providers/home_controller.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   const AppBottomNavigationBar({

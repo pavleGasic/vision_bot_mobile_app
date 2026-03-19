@@ -18,11 +18,12 @@ dependencies:
   uuid: ^4.5.3
   model_viewer_plus: ^1.10.0
   flutter_joystick: ^0.2.2
-  web_socket_channel: ^3.0.3
   get_it: ^9.2.1
   flutter_dotenv: ^6.0.0
   flutter_riverpod: ^3.2.1
   riverpod_annotation: ^4.0.2
+  web_socket_channel: ^3.0.3
+  vector_math: ^2.2.0
 
 dev_dependencies:
   flutter_test:
