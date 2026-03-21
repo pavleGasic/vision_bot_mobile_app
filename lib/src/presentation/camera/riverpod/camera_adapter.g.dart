@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'control_adapter.dart';
+part of 'camera_adapter.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,47 +9,47 @@ part of 'control_adapter.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(ControlAdapter)
-final controlAdapterProvider = ControlAdapterFamily._();
+@ProviderFor(CameraAdapter)
+final cameraAdapterProvider = CameraAdapterFamily._();
 
-final class ControlAdapterProvider
-    extends $NotifierProvider<ControlAdapter, ControlState> {
-  ControlAdapterProvider._({
-    required ControlAdapterFamily super.from,
+final class CameraAdapterProvider
+    extends $NotifierProvider<CameraAdapter, CameraState> {
+  CameraAdapterProvider._({
+    required CameraAdapterFamily super.from,
     required GlobalKey<State<StatefulWidget>>? super.argument,
   }) : super(
          retry: null,
-         name: r'controlAdapterProvider',
+         name: r'cameraAdapterProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$controlAdapterHash();
+  String debugGetCreateSourceHash() => _$cameraAdapterHash();
 
   @override
   String toString() {
-    return r'controlAdapterProvider'
+    return r'cameraAdapterProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  ControlAdapter create() => ControlAdapter();
+  CameraAdapter create() => CameraAdapter();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ControlState value) {
+  Override overrideWithValue(CameraState value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ControlState>(value),
+      providerOverride: $SyncValueProvider<CameraState>(value),
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ControlAdapterProvider && other.argument == argument;
+    return other is CameraAdapterProvider && other.argument == argument;
   }
 
   @override
@@ -58,47 +58,47 @@ final class ControlAdapterProvider
   }
 }
 
-String _$controlAdapterHash() => r'a6f757fe8355510499e87c15f53ff8c8ff40952a';
+String _$cameraAdapterHash() => r'0edf334ae08149e8b83c7906f16e4abea3820d9f';
 
-final class ControlAdapterFamily extends $Family
+final class CameraAdapterFamily extends $Family
     with
         $ClassFamilyOverride<
-          ControlAdapter,
-          ControlState,
-          ControlState,
-          ControlState,
+          CameraAdapter,
+          CameraState,
+          CameraState,
+          CameraState,
           GlobalKey<State<StatefulWidget>>?
         > {
-  ControlAdapterFamily._()
+  CameraAdapterFamily._()
     : super(
         retry: null,
-        name: r'controlAdapterProvider',
+        name: r'cameraAdapterProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  ControlAdapterProvider call([GlobalKey<State<StatefulWidget>>? familyKey]) =>
-      ControlAdapterProvider._(argument: familyKey, from: this);
+  CameraAdapterProvider call([GlobalKey<State<StatefulWidget>>? familyKey]) =>
+      CameraAdapterProvider._(argument: familyKey, from: this);
 
   @override
-  String toString() => r'controlAdapterProvider';
+  String toString() => r'cameraAdapterProvider';
 }
 
-abstract class _$ControlAdapter extends $Notifier<ControlState> {
+abstract class _$CameraAdapter extends $Notifier<CameraState> {
   late final _$args = ref.$arg as GlobalKey<State<StatefulWidget>>?;
   GlobalKey<State<StatefulWidget>>? get familyKey => _$args;
 
-  ControlState build([GlobalKey<State<StatefulWidget>>? familyKey]);
+  CameraState build([GlobalKey<State<StatefulWidget>>? familyKey]);
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<ControlState, ControlState>;
+    final ref = this.ref as $Ref<CameraState, CameraState>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ControlState, ControlState>,
-              ControlState,
+              AnyNotifier<CameraState, CameraState>,
+              CameraState,
               Object?,
               Object?
             >;

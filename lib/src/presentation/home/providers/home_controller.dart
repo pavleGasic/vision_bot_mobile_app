@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:vision_bot_mobile_app/core/common/providers/tab_navigator.dart';
 import 'package:vision_bot_mobile_app/core/common/views/persistent_view.dart';
 import 'package:vision_bot_mobile_app/src/presentation/3dmodel/view/robot_model_view.dart';
+import 'package:vision_bot_mobile_app/src/presentation/camera/view/camera_view.dart';
 import 'package:vision_bot_mobile_app/src/presentation/control/view/control_view.dart';
+import 'package:vision_bot_mobile_app/src/presentation/settings/view/settings_view.dart';
 
 class HomeController extends ChangeNotifier {
   List<int> _indexHistory = [0];
@@ -28,7 +30,7 @@ class HomeController extends ChangeNotifier {
     ChangeNotifierProvider(
       create: (_) => TabNavigator(
         TabItem(
-          child: const Placeholder(),
+          child: const CameraView(),
         ),
       ),
       child: const PersistentView(),
@@ -36,7 +38,7 @@ class HomeController extends ChangeNotifier {
     ChangeNotifierProvider(
       create: (_) => TabNavigator(
         TabItem(
-          child: const Placeholder(),
+          child: const SettingsView(),
         ),
       ),
       child: const PersistentView(),

@@ -23,9 +23,8 @@ class ControlAdapter extends _$ControlAdapter {
     );
     final result = _publishVelocity(param);
     return result.fold(
-      (failure) => state = const ControlSendSuccess(),
-      (hbMsg) =>
-          state = const ControlSendFail('Error while sending velocity message'),
+      (failure) => state = ControlSendFail(failure.errorMessage),
+      (twistMsg) => state = ControlSendSuccess(twistMsg),
     );
   }
 }

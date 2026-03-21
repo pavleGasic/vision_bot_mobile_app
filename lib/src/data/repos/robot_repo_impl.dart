@@ -5,6 +5,7 @@ import 'package:vision_bot_mobile_app/core/errors/failures.dart';
 import 'package:vision_bot_mobile_app/core/utils/typedefs.dart';
 import 'package:vision_bot_mobile_app/src/data/models/ros_connection_state_model.dart';
 import 'package:vision_bot_mobile_app/src/data/sources/robot_remote_data_source.dart';
+import 'package:vision_bot_mobile_app/src/domain/entities/camera_data.dart';
 import 'package:vision_bot_mobile_app/src/domain/entities/heartbeat_message.dart';
 import 'package:vision_bot_mobile_app/src/domain/entities/ros_connection_state.dart';
 import 'package:vision_bot_mobile_app/src/domain/entities/twist.dart';
@@ -59,6 +60,36 @@ class RobotRepoImpl implements RobotRepo {
           linear: linear,
         ),
       );
+    } on WebSocketException catch (e) {
+      return Left(
+        WebSocketFailure(
+          message: e.message,
+          statusCode: e.message,
+        ),
+      );
+    }
+  }
+
+  @override
+  ResultObject<Stream<CameraData>> subscribeCamera() {
+    try {
+      final cameraDataStream = _remoteDataSource.subscribeCamera();
+      return Right(cameraDataStream);
+    } on WebSocketException catch (e) {
+      return Left(
+        WebSocketFailure(
+          message: e.message,
+          statusCode: e.message,
+        ),
+      );
+    }
+  }
+
+  @override
+  ResultObject<void> unsubscribeCamera() {
+    try {
+      _remoteDataSource.unsubscribeCamera();
+      return const Right(null);
     } on WebSocketException catch (e) {
       return Left(
         WebSocketFailure(

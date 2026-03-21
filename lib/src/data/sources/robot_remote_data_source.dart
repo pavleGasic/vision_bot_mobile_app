@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:vector_math/vector_math.dart';
+import 'package:vision_bot_mobile_app/src/data/models/camera_data_model.dart';
 import 'package:vision_bot_mobile_app/src/data/models/heartbeat_message_model.dart';
 import 'package:vision_bot_mobile_app/src/data/models/ros_connection_state_model.dart';
 
@@ -17,4 +18,8 @@ abstract class RobotRemoteDataSource {
     required Vector3 linear,
     required Vector3 angular,
   });
+
+  Stream<CameraDataModel> subscribeCamera();
+
+  void unsubscribeCamera();
 }

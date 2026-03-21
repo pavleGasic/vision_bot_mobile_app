@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:vision_bot_mobile_app/src/domain/entities/twist.dart';
 
 sealed class ControlState extends Equatable {
   const ControlState();
@@ -12,7 +13,12 @@ final class ControlInitial extends ControlState {
 }
 
 final class ControlSendSuccess extends ControlState {
-  const ControlSendSuccess();
+  const ControlSendSuccess(this.twist);
+
+  final Twist twist;
+
+  @override
+  List<Object?> get props => [twist];
 }
 
 final class ControlSendFail extends ControlState {

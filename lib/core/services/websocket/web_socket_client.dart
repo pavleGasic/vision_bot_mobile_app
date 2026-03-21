@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:vision_bot_mobile_app/core/errors/exceptions.dart';
 import 'package:vision_bot_mobile_app/core/services/websocket/web_socket_state.dart';
-import 'package:vision_bot_mobile_app/core/utils/typedefs.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketClient {
@@ -18,28 +16,31 @@ class WebSocketClient {
   final Duration _reconnectInterval;
 
   late WebSocketChannel _channel;
-  StreamSubscription<dynamic>? _subscription;
+  late StreamSubscription<dynamic> _subscription;
+
+  void Function(dynamic)? _onData;
+  void Function()? _onReconnect;
 
   bool _connected = false;
   bool _manuallyDisconnected = false;
-
-  final Map<String, StreamController<DataMap>> _topicControllers = {};
-  final Set<String> _subscribedTopics = {};
-  final Set<String> _publishedTopics = {};
-
   Timer? _reconnectTimer;
 
   final StreamController<WebSocketState> _connectionController =
       StreamController<WebSocketState>.broadcast();
-
-  bool get isConnected => _connected;
 
   StreamController<WebSocketState> get streamController =>
       _connectionController;
 
   static const _logPrefix = '[WebSocketClient]';
 
-  Future<void> connect() async {
+  Future<void> connect(
+    void Function(dynamic)? onData, {
+    void Function()? onError,
+    void Function()? onDone,
+    void Function()? onReconnect,
+  }) async {
+    _onData = onData;
+    _onReconnect = onReconnect;
     if (_connected) {
       log('$_logPrefix Already connected', name: 'WS');
       return;
@@ -53,22 +54,24 @@ class WebSocketClient {
       await _channel.ready;
 
       _subscription = _channel.stream.listen(
-        _handleMessage,
+        onData,
         onError: (dynamic error) {
           log('$_logPrefix Stream error: $error', name: 'WS', error: error);
           _handleDisconnect();
+          onError?.call();
         },
         onDone: () {
           log('$_logPrefix Connection closed by server', name: 'WS');
           _handleDisconnect();
+          onDone?.call();
         },
       );
 
       _connected = true;
       _manuallyDisconnected = false;
-      log('$_logPrefix Connected successfully', name: 'WS');
       _connectionController.add(WebSocketState.connected);
       _reconnectTimer?.cancel();
+      log('$_logPrefix Connected successfully', name: 'WS');
     } catch (e, stack) {
       log(
         '$_logPrefix Connection failed',
@@ -90,46 +93,31 @@ class WebSocketClient {
 
   Future<void> disconnect() async {
     log('$_logPrefix Manual disconnect requested', name: 'WS');
-
     _manuallyDisconnected = true;
 
     try {
-      await _subscription?.cancel();
+      await _subscription.cancel();
       await _channel.sink.close();
     } on Exception catch (e) {
       log('$_logPrefix Error while disconnecting: $e', name: 'WS');
     }
 
-    await _clearConnection();
     _connectionController.add(WebSocketState.disconnected);
-    _publishedTopics.clear();
     log('$_logPrefix Disconnected', name: 'WS');
   }
 
   void publish({
-    required String topic,
-    required DataMap message,
-    required String advertiseMsgType
+    required String message,
   }) {
     if (!_connected) {
       log('$_logPrefix Publish ignored, not connected', name: 'WS');
       return;
     }
 
-    if (!_publishedTopics.contains(topic)) {
-      final advMsg = _advertiseMessage(topic, advertiseMsgType);
-      _channel.sink.add(advMsg);
-      _publishedTopics.add(topic);
-    }
-
-    final data = _buildMessage('publish', topic, message);
-
-    log('$_logPrefix Publishing to [$topic] -> $message', name: 'WS');
-
-    _channel.sink.add(data);
+    _channel.sink.add(message);
   }
 
-  Stream<DataMap> subscribe({required String topic}) {
+  void subscribe({required String message}) {
     if (!_connected) {
       log('$_logPrefix Subscribe failed, not connected', name: 'WS');
 
@@ -139,105 +127,20 @@ class WebSocketClient {
       );
     }
 
-    final controller = _topicControllers.putIfAbsent(
-      topic,
-      () {
-        log('$_logPrefix Subscribing to topic [$topic]', name: 'WS');
-
-        final c = StreamController<DataMap>.broadcast(
-          onCancel: () => unsubscribe(topic: topic),
-        );
-
-        _subscribedTopics.add(topic);
-
-        final data = _buildMessage('subscribe', topic);
-        _channel.sink.add(data);
-
-        return c;
-      },
-    );
-
-    return controller.stream;
+    _channel.sink.add(message);
   }
 
-  Future<void> unsubscribe({required String topic}) async {
-    log('$_logPrefix Unsubscribing from [$topic]', name: 'WS');
-
+  void unsubscribe({required String message}) {
+    log('$_logPrefix Unsubscribing from topic.', name: 'WS');
     if (!_connected) {
       log('$_logPrefix Cannot unsubscribe, not connected', name: 'WS');
       return;
     }
 
     try {
-      _channel.sink.add(_buildMessage('unsubscribe', topic));
+      _channel.sink.add(message);
     } on Exception catch (e) {
       log('$_logPrefix Unsubscribe error: $e', name: 'WS');
-    }
-
-    await _topicControllers[topic]?.close();
-    _topicControllers.remove(topic);
-    _subscribedTopics.remove(topic);
-  }
-
-  void _handleMessage(dynamic message) {
-    log('$_logPrefix Raw message received -> $message', name: 'WS');
-
-    try {
-      final decoded = jsonDecode(message.toString()) as DataMap;
-
-      final topic = decoded['topic'] as String?;
-      final msg = decoded['msg'] as DataMap?;
-
-      if (topic == null || msg == null) {
-        log('$_logPrefix Invalid message format', name: 'WS');
-        return;
-      }
-
-      if (_topicControllers.containsKey(topic)) {
-        log('$_logPrefix Message for [$topic] -> $msg', name: 'WS');
-
-        _topicControllers[topic]!.add(msg);
-      } else {
-        log('$_logPrefix No subscribers for topic [$topic]', name: 'WS');
-      }
-    } on Exception catch (e, stack) {
-      log(
-        '$_logPrefix Message parsing failed',
-        name: 'WS',
-        error: e,
-        stackTrace: stack,
-      );
-    }
-  }
-
-  String _buildMessage(String op, String topic, [DataMap? msg]) {
-    return jsonEncode({
-      'op': op,
-      'topic': topic,
-      'msg': ?msg,
-    });
-  }
-
-  String _advertiseMessage(String topic, String messageType) {
-    return jsonEncode({
-      'op': 'advertise',
-      'topic': topic,
-      'type': messageType
-    });
-  }
-
-  void _handleDisconnect() {
-    if (!_connected) return;
-
-    log('$_logPrefix Disconnected from server', name: 'WS');
-
-    _connected = false;
-    _connectionController.add(WebSocketState.disconnected);
-    _publishedTopics.clear();
-
-    if (!_manuallyDisconnected) {
-      log('$_logPrefix Scheduling reconnect...', name: 'WS');
-      _scheduleReconnect();
     }
   }
 
@@ -256,9 +159,9 @@ class WebSocketClient {
       log('$_logPrefix Attempting reconnect...', name: 'WS');
 
       try {
-        await connect();
+        await connect(_onData, onReconnect: _onReconnect);
         log('$_logPrefix Reconnect successful', name: 'WS');
-        _resubscribeTopics();
+        _onReconnect?.call();
         _reconnectTimer?.cancel();
       } on Exception catch (e) {
         log('$_logPrefix Reconnect failed: $e', name: 'WS');
@@ -266,33 +169,17 @@ class WebSocketClient {
     });
   }
 
-  void _resubscribeTopics() {
-    for (final topic in _subscribedTopics) {
-      try {
-        final data = _buildMessage('subscribe', topic);
-        _channel.sink.add(data);
+  void _handleDisconnect() {
+    if (!_connected) return;
 
-        log('$_logPrefix Resubscribed to [$topic]', name: 'WS');
-      } on Exception catch (e) {
-        log('$_logPrefix Failed to resubscribe [$topic]: $e', name: 'WS');
-      }
-    }
-  }
-
-  Future<void> _clearConnection() async {
-    log('$_logPrefix Clearing connection state', name: 'WS');
+    log('$_logPrefix Disconnected from server', name: 'WS');
 
     _connected = false;
     _connectionController.add(WebSocketState.disconnected);
 
-    for (final controller in _topicControllers.values) {
-      await controller.close();
+    if (!_manuallyDisconnected) {
+      log('$_logPrefix Scheduling reconnect...', name: 'WS');
+      _scheduleReconnect();
     }
-
-    _topicControllers.clear();
-    _subscribedTopics.clear();
-    _publishedTopics.clear();
-
-    _reconnectTimer?.cancel();
   }
 }
